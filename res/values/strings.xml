@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ChatUML</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="chat_button">Chat</string>
+    <string name="volunteer_login_button">Volunteer Login</string>
+    <string name="title">ChatUML</string>
+    <string name="title_activity_chat">ChatActivity</string>
+    <string name="send">Send</string>
+    <string name="chat_bubble_desc">Chat Bubble</string>
+    <string name="title_activity_connecting">ConnectingActivity</string>
+    <string name="connecting">Connecting to chat server...</string>
+
+</resources>

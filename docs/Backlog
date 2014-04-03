@@ -1,0 +1,42 @@
+ChatUML Feature List
+	- Connect students to volunteers
+		- Home screen
+			- Chat buttons (two options)
+				- Instant connect
+				- Provide some context
+			- Volunteer login
+			- Privacy information
+		- User experience
+			- Connecting screen
+				- Indicate connection in progress
+				- Uplifting messages
+				- Relaxation tips
+			- Chat screen
+				- Text-message style
+					- Send to and receive from volunteers
+				- Change appearance (color, font, etc.)
+				- Options menu
+					- Request different volunteer
+					- Motivational quotes
+					- Motivational music
+					- Close conversation
+		- Volunteer experience
+			- Login
+				- Username / Password
+			- Volunteer home screen
+				- Select from options:
+					- Unopened conversations, current conversations, forum (?)
+			- Volunteer conversation screen
+				- Same appearance as user
+					- Send to and receive from users
+				- Options menu
+					- Pass off to manager
+					- Other options from home screen
+				- Swipe to switch conversations
+				- Connect volunteer to outside authority
+			- Pending screen
+				- List users looking for help
+				- Options Menu
+					- Options from home screen
+			- Forum screen
+				- ??

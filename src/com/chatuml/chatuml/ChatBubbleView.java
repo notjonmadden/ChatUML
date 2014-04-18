@@ -10,9 +10,16 @@ import android.graphics.RectF;
 import android.text.format.Time;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+/**
+ * @author J. Madden
+ * ChatBubbleView represents a message sent/received to/from 
+ * the XMPP server. 
+ */
 
 public class ChatBubbleView extends LinearLayout {
 
@@ -29,8 +36,7 @@ public class ChatBubbleView extends LinearLayout {
 	private int mOrigin;
 	private Time mCreationTime;
 	
-	private float mTextSize = 24;	
-	private int mLineCount = 0;
+	private float mTextSize = 24;
 	private float mWidth = 0;
 	private float mHeight = 0;
 	private RelativeLayout.LayoutParams mParams;
@@ -48,31 +54,51 @@ public class ChatBubbleView extends LinearLayout {
 		mBubblePaint = new Paint();
 		mBubblePaint.setAntiAlias(true);
 		mBubblePaint.setStyle(Paint.Style.FILL);
-		mBubblePaint.setAlpha(128);
 		mBubbleRect = new RectF();
 		
+		//Layout params relative to parent RelativeLayout
 		mParams = new RelativeLayout.LayoutParams(0, 0);
+		mParams.setMargins(5, 5, 5, 5);
 		
 		setWillNotDraw(false);
 		this.setOrientation(VERTICAL);
+		
+		this.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//TODO chat bubble onclick
+			}
+		});
 	}
 	
 	
 	/* setters */
 	
+	/**
+	 * Set the origin of this bubble.
+	 * @param origin Either ORIGIN_SENT or ORIGIN_RECV
+	 */
 	public void setOrigin(int origin) {
 		mOrigin = origin;
 		if(mOrigin == ORIGIN_RECV) {
-			mBubblePaint.setColor(Color.GRAY);
+			mBubblePaint.setColor(Color.rgb(0xd9, 0xd9, 0xd9));
 		} else {
-			mBubblePaint.setColor(Color.GREEN);
+			mBubblePaint.setColor(Color.rgb(0x90, 0xff, 0x8a));
 		}
 	}
 	
+	/**
+	 * Set the creation time of this bubble.
+	 * @param time Time of creation
+	 */
 	public void setCreationTime(Time time) {
 		mCreationTime = time;
 	}
 	
+	/**
+	 * Set the text of this bubble.
+	 * @param text Text to display
+	 */
 	public void setText(String text) {
 		TextView tv;
 		String line;
@@ -80,38 +106,46 @@ public class ChatBubbleView extends LinearLayout {
 		/* cut long text up into shorter lines */
 		do {
 			tv = new TextView(mContext);
-			tv.setPadding(10, 0, 10, 0);
+			tv.setPadding(20, 0, 20, 0);
 			tv.setTextSize(mTextSize);
-			line = text;
+			line = new String();
 			int i = 0;
-			for( ; tv.getPaint().measureText(line) > MAX_LINE_LENGTH ; ++i) { 
-				line = text.substring(0, text.length() - i);
+			/* fit as many chars as we can onto a line 
+			 * unless we hit a newline first */
+			while(i < text.length() &&
+				  tv.getPaint().measureText(line) < MAX_LINE_LENGTH) { 
+				line += text.charAt(i);
+				++i;
+				if(line.charAt(i-1) == '\n') {
+					break;
+				}
 			}
-			if(tv.getPaint().measureText(text) > MAX_LINE_LENGTH) {
-				text = text.substring(text.length() - i);
-			}
-			tv.setText(line);
+			tv.setText(line.trim());
 			addView(tv);
-			
 
-			tv.getPaint().getTextBounds(tv.getText().toString(), 0, tv.length(), bounds);
-			mHeight += bounds.height() + 5;
-			++mLineCount;
-		} while(tv.getPaint().measureText(text) > MAX_LINE_LENGTH);
+			/* increase height of bubble */
+			tv.getPaint().getTextBounds(line, 0, line.length(), bounds);
+			mHeight += bounds.height() ;
+			
+			if(i < text.length()) {
+				text = text.substring(i);
+			} else {
+				break;
+			}
+		} while(true);
 		
-		//this is a somewhat messy implementation, fix it maybe
-		if(mLineCount > 1) {
-			tv = new TextView(mContext);
-			tv.setText(text);
-			tv.setPadding(10, 0, 10, 0);
-			tv.setTextSize(mTextSize);
-			addView(tv);
-			tv.getPaint().getTextBounds(tv.getText().toString(), 0, tv.length(), bounds);
-			mHeight += bounds.height() + 5;
+		for(int i = 0 ; i < getChildCount() ; ++i) {
+			String l = ((TextView) getChildAt(i)).getText().toString();
+			float w = tv.getPaint().measureText(l);
+			if(w > mWidth) {
+				mWidth = w;
+			}
 		}
-		
-		mWidth = tv.getPaint().measureText(((TextView)getChildAt(0)).getText().toString());
-		this.setLayoutParams(new RelativeLayout.LayoutParams(2 * (int)mWidth, 2 * (int)mHeight));
+		double hBubble =  mHeight + 25 * getChildCount();
+		float wBubble = mWidth + tv.getPaddingLeft() + tv.getPaddingRight();
+		mBubbleRect.set(0, 0, wBubble, (float) hBubble);
+		mParams.height = (int) mBubbleRect.height();
+		mParams.width = (int) mBubbleRect.width();
 	}
 	
 	
@@ -128,7 +162,7 @@ public class ChatBubbleView extends LinearLayout {
 	public String getText() {
 		StringBuilder sb = new StringBuilder();
 		/* reconstruct single string from multiple lines of text */
-		for(int i = 0 ; i < mLineCount ; ++i) {
+		for(int i = 0 ; i < getChildCount() ; ++i) {
 			sb.append(((TextView)getChildAt(i)).getText() + " ");
 		}
 		return sb.toString();
@@ -139,25 +173,20 @@ public class ChatBubbleView extends LinearLayout {
 	
 	@Override
 	protected void onDraw(Canvas canvas) {
-		drawBubble(canvas);
-		mParams.height = (int) mBubbleRect.height() + 10;
-		mParams.width = (int) mBubbleRect.width() + 15;
+		canvas.drawRoundRect(mBubbleRect, 5.0f, 5.0f, mBubblePaint);
 		if(mOrigin == ORIGIN_SENT) {
 			mParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 		} else {
 			mParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 		}
-		this.setLayoutParams(mParams);
+		setLayoutParams(mParams);
 		super.onDraw(canvas);
 	}
 	
 	
-	/* helpers */
 	
-	private void drawBubble(Canvas canvas) {
-		mBubbleRect.set(0, 0, mWidth + 20, mHeight + 15);
-		canvas.drawRoundRect(mBubbleRect, 10.0f, 10.0f, mBubblePaint);
-	}
+	
+	/* helpers */
 
 	public ChatBubbleView(Context context) {
 		this(context, null);

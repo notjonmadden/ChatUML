@@ -1,15 +1,15 @@
 package com.chatuml.chatuml;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
+import org.jivesoftware.smack.*;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.Toast;
 
-public class ConnectToServerTask extends AsyncTask<URL, Void, URLConnection> {
+public class ConnectToServerTask extends AsyncTask<String, Void, Boolean> {
 
 	Context mContext;
 	
@@ -18,23 +18,39 @@ public class ConnectToServerTask extends AsyncTask<URL, Void, URLConnection> {
 	}
 	
 	@Override
-	protected URLConnection doInBackground(URL... params) {
-		URLConnection conn;
+	protected Boolean doInBackground(String... params) {
+		XMPPConnection conn;
 		try {
-			conn = params[0].openConnection();
-		} catch (IOException e) {
-			return null;
+			SmackAndroid.init(mContext);
+			AndroidConnectionConfiguration config = 
+				new AndroidConnectionConfiguration("129.63.16.140", 5222);
+			if(params[2] == "false") {
+				config.setServiceName("chatuml.com");
+			} else {
+				config.setServiceName("volunteer.chatuml.com");
+			}
+			config.setSendPresence(false);
+			conn = new XMPPConnection(config);
+			conn.connect();
+			Log.i(MainActivity.TAG, "Connected");
+			conn.login(params[0], params[1] != null ? params[1] : "password");
+			Log.i(MainActivity.TAG, "Logged in");
+		} catch (Exception e) {
+			Log.e(MainActivity.TAG, e.getMessage());
+			return false;
 		}
-		return conn;
+		
+		XMPPConnectionHolder.getInstance().setConnection(conn);
+		return true;
 	}
 	
 	@Override
-	protected void onPostExecute(URLConnection result) {
-		if(result != null) {
-			ConnectingActivity.setConnection(result);
+	protected void onPostExecute(Boolean result) {
+		if(result != null && result == true) {
 			Intent intent = new Intent(mContext, ChatActivity.class);
 			mContext.startActivity(intent);
 		} else {
+			Toast.makeText(mContext, "Failed to connect", Toast.LENGTH_LONG).show();
 			((Activity)mContext).finish();
 		}
 	}

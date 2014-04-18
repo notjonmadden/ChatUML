@@ -7,6 +7,9 @@
     <uses-sdk
         android:minSdkVersion="11"
         android:targetSdkVersion="19" />
+    
+   	<uses-permission 
+   	    android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -30,7 +33,6 @@
             android:name="com.chatuml.chatuml.ConnectingActivity"
             android:label="@string/title_activity_connecting" >
         </activity>
-        <service android:name="com.chatuml.chatuml.MsgService" />
     </application>
 
 </manifest>

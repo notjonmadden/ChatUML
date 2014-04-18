@@ -2,17 +2,24 @@ package com.chatuml.chatuml;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.EditText;
 
 public class MainActivity extends Activity {
 
 	public static final String TAG = "ChatUML";
+	public static final String USERNAME = "uname";
+	public static final String PASSWORD = "pw";
+	public static final String IS_VOLUNTEER = "isvol";
 	
 	private Button mChatButton;
 	private Button mVolunteerLoginButton;
@@ -30,8 +37,24 @@ public class MainActivity extends Activity {
 				@Override
 				public void onClick(View v) {
 					Log.i(TAG, "entered Chat onClickListener()");
-					Intent intent = new Intent(v.getContext(), ConnectingActivity.class);
-					startActivity(intent);
+					final Context context = v.getContext();
+					final Intent intent = new Intent(context, ConnectingActivity.class);
+					final View view = LayoutInflater.from(context).inflate(R.layout.login_user, null);
+					final EditText et = (EditText) view.findViewById(R.id.user_uname);
+					AlertDialog.Builder b = new AlertDialog.Builder(context);
+					b.setView(view)
+					 .setTitle("Enter username")
+					 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Log.i(TAG, "Starting ConnectingActivity as user");
+							intent.putExtra(USERNAME, et.getText().toString());
+							intent.putExtra(IS_VOLUNTEER, false);
+							context.startActivity(intent);
+						}
+					})
+					 .setNegativeButton("Cancel", null)
+					 .show();
 				}
     		}
         );
@@ -40,31 +63,31 @@ public class MainActivity extends Activity {
 				@Override
 				public void onClick(View v) {
 					Log.i(TAG, "entered Login onClickListener()");
-					Toast.makeText(v.getContext(), "Not yet implemented!", Toast.LENGTH_SHORT).show();
+					final Context context = v.getContext();
+					final Intent intent = new Intent(context, ConnectingActivity.class);
+					final View view = 
+						LayoutInflater.from(context).inflate(R.layout.login_volunteer, null);
+					final EditText uname = (EditText) view.findViewById(R.id.volunteer_uname);
+					final EditText pw = (EditText) view.findViewById(R.id.volunteer_pw);
+					AlertDialog.Builder b = new AlertDialog.Builder(context);
+					b.setView(view)
+					 .setTitle("Enter username and password")
+					 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Log.i(TAG, "Starting ConnectingActivity as Volunteer");
+							intent.putExtra(USERNAME, uname.getText().toString());
+							intent.putExtra(PASSWORD, pw.getText().toString());
+							intent.putExtra(IS_VOLUNTEER, true);
+							context.startActivity(intent);
+						}
+					 })
+					 .setNegativeButton("Cancel", null)
+					 .show();
 				}
         	}
         );
     }
-
-    @Override
-	protected void onResume() {
-		super.onResume();
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-	
-	@Override
-	protected void onStop() {
-		super.onStop();
-	}
-	
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-	}
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

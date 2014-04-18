@@ -1,11 +1,11 @@
 package com.chatuml.chatuml;
 
-import java.net.URLConnection;
+import org.jivesoftware.smack.XMPPException;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -17,30 +17,36 @@ import android.widget.Toast;
 public class ChatActivity extends Activity {
 
 	private LayoutInflater mInflater;
-	private ChatBubbleDownloadTask mMsgDownloader;
-	private URLConnection mMsgConnection;
 	
 	private EditText mEditText;
 	private Button mButtonSend;
 	private ListView mListView;
 	private ChatBubbleListAdapter mListAdapter;	
 	
+	private XmppServerThread mThread;
+	
 	private static final String ORIGINS_KEY = "saved_origins";
 	private static final String MSGS_KEY = "saved_msgs";
+		
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.i(MainActivity.TAG, "onCreate");
+		mListAdapter = new ChatBubbleListAdapter();
+
+		
 		setContentView(R.layout.activity_chat);
 		mInflater = LayoutInflater.from(this);
-		mMsgConnection = ConnectingActivity.getConnection();
+
+
 		
 		mEditText = (EditText) findViewById(R.id.editTextMsg);
 		mButtonSend = (Button) findViewById(R.id.buttonSend);
 		mListView = (ListView) findViewById(R.id.listViewMsgs);
 		mListView.setDivider(null);
 		mListView.setDividerHeight(5);
-		mListAdapter = new ChatBubbleListAdapter();//(this);
+		
 		
 		mListView.setAdapter(mListAdapter);
 		mButtonSend.setOnClickListener(
@@ -51,10 +57,19 @@ public class ChatActivity extends Activity {
 					RelativeLayout rl = 
 							(RelativeLayout) mInflater.inflate(R.layout.chat_msg_layout, mListView, false);
 					ChatBubbleView bubble = (ChatBubbleView) rl.findViewById(R.id.chatBubble);
-					bubble.setText(mEditText.getText().toString());
+					
+					
+					String inputText = mEditText.getText().toString();
+					
+					
+					bubble.setText(inputText);
 					bubble.setOrigin(ChatBubbleView.ORIGIN_SENT);
 					mListAdapter.addView(rl);
-					
+					try {
+						mThread.sendMsg(inputText);
+					} catch (XMPPException e) {
+						e.printStackTrace();
+					}
 					/* clear input for next msg */
 					mEditText.setText("");
 				}
@@ -74,16 +89,15 @@ public class ChatActivity extends Activity {
 				mListAdapter.addView(rl);				
 			}
 		}
-		
+		mThread = new XmppServerThread(mListAdapter, this);
+		mThread.start();
+		mThread.createChat("jmadden@chatuml.com");
 		Toast.makeText(this, "Welcome! You're now connected to a crisis specialist.", Toast.LENGTH_SHORT).show();
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		//TODO consider whether msg downloading should be done with a more advanced thread class
-		mMsgDownloader = new ChatBubbleDownloadTask(this, mListAdapter);
-		mMsgDownloader.execute(mMsgConnection);
 	}
 	
 	@Override 
@@ -99,7 +113,6 @@ public class ChatActivity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		mMsgDownloader.cancel(true);
 	}
 	
 	@Override
@@ -110,6 +123,7 @@ public class ChatActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		mThread.kill();
 	}
 	
 	@Override
@@ -128,11 +142,25 @@ public class ChatActivity extends Activity {
 		savedInstanceState.putStringArray(MSGS_KEY, msgs);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.chat, menu);
-		return true;
-	}
-
+    
+    /*
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	MenuInflater inflater = getMenuInflater();
+    	inflater.inflate(R.menu.chat_options_menu, menu);
+    	return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	switch (item.getItemId()) {
+    	case R.id.new_vol:
+    		// TODO implement case
+    		return true;
+    	case R.id.help:
+    		// TODO implement help/about us
+    		return true;
+    	}
+    }
+    */
 }

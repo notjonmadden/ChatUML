@@ -1,41 +1,26 @@
 package com.chatuml.chatuml;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
+import android.util.Log;
 import android.view.Menu;
 
 public class ConnectingActivity extends Activity {
 
 	private ConnectToServerTask mConnectToServerTask;
-	private static URLConnection mConnection;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_connecting);
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		try {
-			mConnectToServerTask = new ConnectToServerTask(this);
-			mConnectToServerTask.execute(new URL("http://www.cs.uml.edu"));
-		} catch (MalformedURLException e) {
-			
-		}
-	}
-	
-	public static void setConnection(URLConnection conn) {
-		mConnection = conn;
-	}
-
-	public static URLConnection getConnection() {
-		return mConnection;
+		Intent creator = getIntent();
+		String uname = creator.getStringExtra(MainActivity.USERNAME);
+		String pw = creator.getStringExtra(MainActivity.PASSWORD);
+		boolean iv = creator.getBooleanExtra(MainActivity.IS_VOLUNTEER, false);
+		Log.i(MainActivity.TAG, "ConnectingActivity.onCreate()");
+		mConnectToServerTask = new ConnectToServerTask(this);
+		mConnectToServerTask.execute(uname, pw, iv ? "true" : "false");
 	}
 	
 	@Override

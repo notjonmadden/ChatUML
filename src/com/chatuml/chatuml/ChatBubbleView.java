@@ -1,12 +1,17 @@
 package com.chatuml.chatuml;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.text.format.Time;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -14,6 +19,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * @author J. Madden
@@ -29,6 +35,7 @@ public class ChatBubbleView extends LinearLayout {
 	
 	private Context mContext;
 	private DisplayMetrics mDisplayMetrics;
+	private ClipboardManager mClipboardManager;
 	
 	private Paint mBubblePaint;
 	private RectF mBubbleRect;
@@ -47,6 +54,8 @@ public class ChatBubbleView extends LinearLayout {
 		mDisplayMetrics = new DisplayMetrics();
 		((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetrics);
 		MAX_LINE_LENGTH = (int) (mDisplayMetrics.widthPixels * 0.65);
+		mClipboardManager = 
+			(ClipboardManager) mContext.getSystemService(Activity.CLIPBOARD_SERVICE);
 		
 		mCreationTime = new Time("EST");
 		mCreationTime.setToNow();
@@ -62,11 +71,37 @@ public class ChatBubbleView extends LinearLayout {
 		
 		setWillNotDraw(false);
 		this.setOrientation(VERTICAL);
-		
 		this.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				//TODO chat bubble onclick
+			}
+		});
+		this.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				CharSequence[] opts = new CharSequence[] { "Copy" };
+				AlertDialog.Builder b = new AlertDialog.Builder(mContext);
+				b.setItems(opts, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						switch(which) {
+						case 0:
+							ClipData clip = 
+								ClipData.newPlainText("ChatUML Message", ChatBubbleView.this.getText());
+							mClipboardManager.setPrimaryClip(clip);
+							Toast.makeText(mContext, 
+								           "Text copied", 
+								           Toast.LENGTH_SHORT).show();
+							break;
+						default:
+							break;
+						}
+					}
+				})
+				.setTitle("Message Options")
+				.show();
+				return true;
 			}
 		});
 	}
@@ -108,6 +143,7 @@ public class ChatBubbleView extends LinearLayout {
 			tv = new TextView(mContext);
 			tv.setPadding(20, 0, 20, 0);
 			tv.setTextSize(mTextSize);
+			tv.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
 			line = new String();
 			int i = 0;
 			/* fit as many chars as we can onto a line 
@@ -165,7 +201,7 @@ public class ChatBubbleView extends LinearLayout {
 		for(int i = 0 ; i < getChildCount() ; ++i) {
 			sb.append(((TextView)getChildAt(i)).getText() + " ");
 		}
-		return sb.toString();
+		return sb.toString().trim();
 	}
 	
 	

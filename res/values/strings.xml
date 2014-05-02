@@ -13,12 +13,10 @@
     <string name="title_activity_connecting">ConnectingActivity</string>
     <string name="connecting">Connecting to chat server...</string>
     <string name="username">Username</string>
-	<string name="password">Password</string>
-	<string name="login_user_title">
-	    Please enter a username for this session, or leave blank to chat anonymously:
-	</string>
-	<string name="login_volunteer_title">
-	    Enter your ChatUML username and password:
-	</string>
-    
+    <string name="password">Password</string>
+    <string name="login_user_title">	    Please enter a username for this session, or leave blank to chat anonymously:</string>
+    <string name="login_volunteer_title">	    Enter your ChatUML username and password:</string>
+    <string name="login_volunteer_remember_me">Remember password</string>
+    <string name="title_activity_volunteer_chat">VolunteerChatActivity</string>
+
 </resources>

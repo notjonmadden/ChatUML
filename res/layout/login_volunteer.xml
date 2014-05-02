@@ -24,5 +24,13 @@
         android:hint="@string/password"
         android:inputType="textPassword"
         android:textSize="24sp" />
+    <CheckBox
+        android:id="@+id/volunteer_remember_pw"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content" 
+        android:checked="false"
+        android:text="@string/login_volunteer_remember_me"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
 
 </LinearLayout>

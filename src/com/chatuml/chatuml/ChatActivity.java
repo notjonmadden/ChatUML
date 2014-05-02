@@ -38,15 +38,12 @@ public class ChatActivity extends Activity {
 		
 		setContentView(R.layout.activity_chat);
 		mInflater = LayoutInflater.from(this);
-
-
 		
 		mEditText = (EditText) findViewById(R.id.editTextMsg);
 		mButtonSend = (Button) findViewById(R.id.buttonSend);
 		mListView = (ListView) findViewById(R.id.listViewMsgs);
 		mListView.setDivider(null);
-		mListView.setDividerHeight(5);
-		
+		mListView.setDividerHeight(5);		
 		
 		mListView.setAdapter(mListAdapter);
 		mButtonSend.setOnClickListener(
@@ -96,31 +93,6 @@ public class ChatActivity extends Activity {
 	}
 	
 	@Override
-	protected void onResume() {
-		super.onResume();
-	}
-	
-	@Override 
-	protected void onStart() {
-		super.onStart();
-	}
-	
-	@Override
-	protected void onRestart() {
-		super.onRestart();
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-	
-	@Override
-	protected void onStop() {
-		super.onStop();
-	}
-	
-	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		mThread.kill();
@@ -141,26 +113,4 @@ public class ChatActivity extends Activity {
 		savedInstanceState.putIntArray(ORIGINS_KEY, origins);
 		savedInstanceState.putStringArray(MSGS_KEY, msgs);
 	}
-
-    
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-    	MenuInflater inflater = getMenuInflater();
-    	inflater.inflate(R.menu.chat_options_menu, menu);
-    	return true;
-    }
-    
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-    	switch (item.getItemId()) {
-    	case R.id.new_vol:
-    		// TODO implement case
-    		return true;
-    	case R.id.help:
-    		// TODO implement help/about us
-    		return true;
-    	}
-    }
-    */
 }

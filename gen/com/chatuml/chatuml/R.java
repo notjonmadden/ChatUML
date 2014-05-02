@@ -60,6 +60,11 @@ containing a value of this type.
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
 
+         Example customization of dimensions originally defined in res/values/dimens.xml
+         (such as screen margins) for screens with more than 820dp of available width. This
+         would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively).
+    
+
          Customize dimensions originally defined in res/values/dimens.xml (such as
          screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
     
@@ -72,7 +77,7 @@ containing a value of this type.
         public static final int ic_launcher=0x7f020001;
     }
     public static final class id {
-        public static final int action_settings=0x7f04000e;
+        public static final int action_settings=0x7f04000f;
         public static final int buttonChat=0x7f040007;
         public static final int buttonSend=0x7f040002;
         public static final int buttonVolunteerLogin=0x7f040008;
@@ -86,6 +91,7 @@ containing a value of this type.
         public static final int textViewTitle=0x7f040009;
         public static final int user_uname=0x7f04000b;
         public static final int volunteer_pw=0x7f04000d;
+        public static final int volunteer_remember_pw=0x7f04000e;
         public static final int volunteer_uname=0x7f04000c;
     }
     public static final class layout {
@@ -100,6 +106,7 @@ containing a value of this type.
         public static final int chat=0x7f090000;
         public static final int connecting=0x7f090001;
         public static final int main=0x7f090002;
+        public static final int volunteer_chat=0x7f090003;
     }
     public static final class string {
         public static final int action_settings=0x7f070001;
@@ -109,12 +116,14 @@ containing a value of this type.
         public static final int connecting=0x7f07000a;
         public static final int hello_world=0x7f070002;
         public static final int login_user_title=0x7f07000d;
+        public static final int login_volunteer_remember_me=0x7f07000f;
         public static final int login_volunteer_title=0x7f07000e;
         public static final int password=0x7f07000c;
         public static final int send=0x7f070007;
         public static final int title=0x7f070005;
         public static final int title_activity_chat=0x7f070006;
         public static final int title_activity_connecting=0x7f070009;
+        public static final int title_activity_volunteer_chat=0x7f070010;
         public static final int username=0x7f07000b;
         public static final int volunteer_login_button=0x7f070004;
     }

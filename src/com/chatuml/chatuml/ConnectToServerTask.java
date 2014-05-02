@@ -51,7 +51,7 @@ public class ConnectToServerTask extends AsyncTask<String, Void, Boolean> {
 			mContext.startActivity(intent);
 		} else {
 			Toast.makeText(mContext, "Failed to connect", Toast.LENGTH_LONG).show();
-			((Activity)mContext).finish();
 		}
+		((Activity)mContext).finish();
 	}
 }
